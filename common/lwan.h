@@ -25,6 +25,8 @@
 #include <stdint.h>
 #include <netinet/in.h>
 
+typedef struct lwan_mempool_t_ lwan_mempool_t;
+
 #include "lwan-coro.h"
 #include "lwan-trie.h"
 #include "lwan-status.h"
@@ -294,5 +296,10 @@ void lwan_shutdown(lwan_t *l);
 
 int lwan_connection_get_fd(lwan_connection_t *conn)
     __attribute__((pure)) __attribute__((warn_unused_result));
+
+lwan_mempool_t* lwan_mempool_new(size_t block_size);
+void* lwan_mempool_acquire(lwan_mempool_t *pool);
+void lwan_mempool_release(lwan_mempool_t *pool, void *ptr);
+void lwan_mempool_free(lwan_mempool_t *pool);
 
 #endif /* __LWAN_H__ */

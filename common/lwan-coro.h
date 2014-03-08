@@ -21,6 +21,9 @@
 #define __LWAN_CORO_H__
 
 #include <stddef.h>
+
+typedef struct lwan_mempool_t_ lwan_mempool_t;
+
 #if defined(__x86_64__)
 #include <stdint.h>
 typedef uintptr_t coro_context_t[10];
@@ -40,6 +43,8 @@ typedef int    (*coro_function_t)	(coro_t *coro);
 struct coro_switcher_t_ {
     coro_context_t caller;
     coro_context_t callee;
+    lwan_mempool_t *coro_pool;
+    lwan_mempool_t *defer_pool;
 };
 
 coro_t *coro_new(coro_switcher_t *switcher, coro_function_t function, void *data);
@@ -59,6 +64,9 @@ void    coro_defer2(coro_t *coro, void (*func)(void *data1, void *data2),
 void   *coro_malloc(coro_t *coro, size_t sz);
 char   *coro_strdup(coro_t *coro, const char *str);
 char   *coro_printf(coro_t *coro, const char *fmt, ...);
+
+void    coro_switcher_init(coro_switcher_t *switcher);
+void    coro_switcher_shutdown(coro_switcher_t *switcher);
 
 #define CORO_DEFER(fn)		((void (*)(void *))(fn))
 #define CORO_DEFER2(fn)		((void (*)(void *, void *))(fn))
